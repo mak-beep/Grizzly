@@ -1,0 +1,237 @@
+rules_version = '2';
+
+// Grizzly security rules — publish these in the Firebase console
+// (Firestore Database -> Rules -> Publish).
+//
+// Every family has its own Firebase project, and all of their data lives
+// under families/family. Two kinds of accounts use it:
+//
+//  * People  — email/password accounts. They must be listed in
+//              families/family/members, so simply knowing the project's
+//              API key is not enough to read a family's data. The first
+//              person to sign in on a new project becomes the owner;
+//              everyone else needs an invite created by a member.
+//  * Devices — the GPS trackers and alarm buttons, which sign in
+//              anonymously. A device may only create its own document and
+//              write its own status/history, never read or change anything
+//              else.
+//
+// Coordinates, event types and timestamps are validated here as well, so a
+// faulty or spoofed client cannot store nonsense.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isDevice() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
+    function isPerson() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function emailKey() {
+      return request.auth.token.email.lower();
+    }
+
+    function memberPath(uid) {
+      return /databases/$(database)/documents/families/family/members/$(uid);
+    }
+
+    function isMember() {
+      return isPerson() && exists(memberPath(request.auth.uid));
+    }
+
+    function isOwner() {
+      return isPerson() &&
+             get(/databases/$(database)/documents/families/family).data.ownerUid == request.auth.uid;
+    }
+
+    function isLat(value) {
+      return value is number && value >= -90 && value <= 90;
+    }
+
+    function isLng(value) {
+      return value is number && value >= -180 && value <= 180;
+    }
+
+    match /families/family {
+      // Any signed-in person may check whether this family exists yet.
+      allow get: if isPerson();
+      allow list: if isMember();
+
+      // The first person on a fresh project claims it.
+      allow create: if isPerson()
+        && request.resource.data.keys().hasOnly(['ownerUid', 'createdAt'])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+
+      match /members/{uid} {
+        allow read: if isMember() || (isPerson() && uid == request.auth.uid);
+
+        // Owner bootstrap (same batch as the family document) or an invited
+        // person joining. Either way only for their own account.
+        allow create: if isPerson()
+          && uid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['email', 'displayName', 'role', 'joinedAt'])
+          && request.resource.data.email == emailKey()
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.size() <= 100
+          && request.resource.data.joinedAt == request.time
+          && (
+            (request.resource.data.role == 'owner'
+              && getAfter(/databases/$(database)/documents/families/family).data.ownerUid == request.auth.uid)
+            || (request.resource.data.role == 'member'
+              && exists(/databases/$(database)/documents/families/family/invites/$(emailKey())))
+          );
+
+        allow update: if isMember()
+          && uid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']);
+
+        // Members can leave; the owner can remove anyone but themselves.
+        allow delete: if (isMember() && uid == request.auth.uid && resource.data.role != 'owner')
+          || (isOwner() && uid != request.auth.uid);
+      }
+
+      match /invites/{email} {
+        allow read: if isMember() || (isPerson() && email == emailKey());
+
+        allow create, update: if isMember()
+          && email == email.lower()
+          && request.resource.data.keys().hasOnly(['email', 'invitedBy', 'createdAt'])
+          && request.resource.data.email == email
+          && request.resource.data.invitedBy == request.auth.uid
+          && request.resource.data.createdAt == request.time;
+
+        // A member can withdraw an invite; the invited person consumes it.
+        allow delete: if isMember() || (isPerson() && email == emailKey());
+      }
+
+      match /devices/{deviceId} {
+        function appFields() {
+          return ['id', 'type', 'name', 'contacts', 'geofence', 'claimedAt', 'deviceUid'];
+        }
+
+        function deviceFields() {
+          return ['type', 'deviceUid', 'isOnline', 'charging', 'fwVersion',
+                  'lastLat', 'lastLng', 'lastSeen', 'alarmActive', 'geofenceStatus'];
+        }
+
+        function validType(data) {
+          return !('type' in data.keys()) || data.type in ['gpsTracker', 'alarmButton'];
+        }
+
+        // Fields the app owns.
+        function validAppData(data) {
+          return validType(data)
+            && (!('id' in data.keys()) || data.id == deviceId)
+            && (!('name' in data.keys()) || (data.name is string && data.name.size() <= 40))
+            && (!('contacts' in data.keys())
+                || (data.contacts is list && data.contacts.size() <= 5))
+            && (!('geofence' in data.keys()) || data.geofence == null
+                || (data.geofence.keys().hasOnly(['centerLat', 'centerLng', 'addressLabel', 'radiusMeters'])
+                    && isLat(data.geofence.centerLat)
+                    && isLng(data.geofence.centerLng)
+                    && data.geofence.radiusMeters is number
+                    && data.geofence.radiusMeters >= 25
+                    && data.geofence.radiusMeters <= 10000
+                    && data.geofence.addressLabel is string
+                    && data.geofence.addressLabel.size() <= 200));
+        }
+
+        // Fields the firmware owns. lastSeen must be the server's time, so a
+        // device cannot backdate or postdate its reports.
+        function validDeviceData(data) {
+          return validType(data)
+            && data.deviceUid == request.auth.uid
+            && (!('lastSeen' in data.keys()) || data.lastSeen == request.time)
+            && (!('lastLat' in data.keys()) || isLat(data.lastLat))
+            && (!('lastLng' in data.keys()) || isLng(data.lastLng))
+            && (!('isOnline' in data.keys()) || data.isOnline is bool)
+            && (!('charging' in data.keys()) || data.charging is bool)
+            && (!('alarmActive' in data.keys()) || data.alarmActive is bool)
+            && (!('fwVersion' in data.keys())
+                || (data.fwVersion is string && data.fwVersion.size() <= 20))
+            && (!('geofenceStatus' in data.keys())
+                || data.geofenceStatus in ['inside', 'outside', 'unknown']);
+        }
+
+        function typeUnchanged() {
+          return !('type' in resource.data.keys())
+            || !('type' in request.resource.data.keys())
+            || request.resource.data.type == resource.data.type;
+        }
+
+        // Family members see every device; a device may read only its own
+        // document (it polls its safe zone from there).
+        allow read: if isMember()
+          || (isDevice() && resource.data.get('deviceUid', '') == request.auth.uid);
+
+        allow create: if (isMember()
+            && request.resource.data.keys().hasOnly(appFields())
+            && validAppData(request.resource.data)
+            && !('deviceUid' in request.resource.data.keys()))
+          || (isDevice()
+            && request.resource.data.keys().hasOnly(deviceFields())
+            && validDeviceData(request.resource.data));
+
+        allow update: if (isMember()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(appFields())
+            && validAppData(request.resource.data)
+            && typeUnchanged()
+            // Members may only clear deviceUid ("Re-pair device").
+            && (!('deviceUid' in request.resource.data.diff(resource.data).affectedKeys())
+                || request.resource.data.get('deviceUid', null) == null))
+          || (isDevice()
+            // Either this device already owns the entry, or it was freed by
+            // a re-pair / created by the app before the device connected.
+            && (resource.data.get('deviceUid', null) == request.auth.uid
+                || resource.data.get('deviceUid', null) == null)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(deviceFields())
+            && validDeviceData(request.resource.data)
+            && typeUnchanged());
+
+        allow delete: if isMember();
+
+        match /history/{eventId} {
+          function validEvent(data) {
+            return data.keys().hasOnly(['id', 'deviceId', 'type', 'timestamp', 'lat', 'lng', 'note'])
+              && data.id == eventId
+              && data.deviceId == deviceId
+              && data.type in ['locationPing', 'geofenceBreach', 'geofenceReturn',
+                               'alarmTriggered', 'alarmCancelled']
+              && data.timestamp == request.time
+              && (data.lat == null || isLat(data.lat))
+              && (data.lng == null || isLng(data.lng))
+              && (data.note == null || (data.note is string && data.note.size() <= 200));
+          }
+
+          allow read: if isMember();
+
+          // Only the physical device writes history (getAfter covers the
+          // first report, where the device document is created in the same
+          // commit as its first event).
+          allow create: if isDevice()
+            && validEvent(request.resource.data)
+            && getAfter(/databases/$(database)/documents/families/family/devices/$(deviceId))
+                 .data.deviceUid == request.auth.uid;
+
+          allow update: if false;
+          allow delete: if isMember();
+        }
+      }
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
