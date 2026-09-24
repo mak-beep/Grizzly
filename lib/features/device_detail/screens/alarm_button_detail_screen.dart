@@ -16,6 +16,7 @@ import '../../dashboard/widgets/device_card.dart';
 import '../widgets/contacts_editor.dart';
 import '../widgets/device_actions.dart';
 import '../widgets/history_log_list.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class AlarmButtonDetailScreen extends ConsumerStatefulWidget {
   final String deviceId;
@@ -61,7 +62,7 @@ class _AlarmButtonDetailScreenState extends ConsumerState<AlarmButtonDetailScree
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(device.name),
+        title: AppBarTitle(device.name),
         actions: [DeviceActionsMenu(device: device)],
       ),
       body: ListView(
@@ -94,7 +95,7 @@ class _AlarmButtonDetailScreenState extends ConsumerState<AlarmButtonDetailScree
                 initialZoom: 16,
                 height: 240,
                 markers: [
-                  MapMarker(point: position, color: AppTheme.alarmButtonColor, icon: Icons.emergency),
+                  MapMarker(point: position, color: AppTheme.alarmButtonColor, icon: DeviceType.alarmButton.icon),
                 ],
               ),
           ],
@@ -109,7 +110,7 @@ class _AlarmButtonDetailScreenState extends ConsumerState<AlarmButtonDetailScree
                       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                   const SizedBox(height: 8),
                   _InfoRow(icon: Icons.visibility_off_outlined, text: t.alarmInfoSilent),
-                  _InfoRow(icon: Icons.emergency, text: t.alarmInfoTrigger),
+                  _InfoRow(icon: DeviceType.alarmButton.icon, text: t.alarmInfoTrigger),
                   _InfoRow(
                     icon: Icons.lock_outline,
                     text: t.alarmInfoDeactivate(
@@ -126,14 +127,14 @@ class _AlarmButtonDetailScreenState extends ConsumerState<AlarmButtonDetailScree
           ContactsEditor(
             key: ValueKey('contacts-${device.id}'),
             initial: device.contacts,
-            onSave: (contacts) => saveContactsAndInvite(ref, device.id, contacts),
+            onSave: (contacts) => repo.setContacts(device.id, contacts),
           ),
           if (isDemo) ...[
             const SizedBox(height: 16),
             SimulatePanel(
               actions: [
                 SimulateAction(
-                  icon: Icons.emergency,
+                  icon: DeviceType.alarmButton.icon,
                   label: t.simulateButtonPress,
                   onPressed: isActive ? null : () => _simulate(device, AlertEventType.alarmTriggered),
                   destructive: true,
@@ -207,7 +208,7 @@ class _StatusBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(isActive ? Icons.emergency : Icons.shield_outlined, color: color, size: 32),
+          Icon(isActive ? DeviceType.alarmButton.icon : Icons.shield_outlined, color: color, size: 32),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

@@ -11,6 +11,7 @@ import '../../../core/models/user_profile.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -25,19 +26,23 @@ class SettingsScreen extends ConsumerWidget {
     if (context.mounted) context.goNamed(AppRoutes.auth);
   }
 
-  Future<void> _disconnectBackend(BuildContext context, WidgetRef ref) async {
+  /// Leaves the current backend (demo or a linked Firebase project) and
+  /// sends the user back through onboarding to pick a new one. Used both to
+  /// disconnect from a family project and, in demo mode, to connect a real
+  /// one for the first time — the underlying reset is identical either way.
+  Future<void> _leaveBackend(BuildContext context, WidgetRef ref, {required bool isDemo}) async {
     final t = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(t.disconnectBackendTitle),
-        content: Text(t.disconnectBackendBody),
+        title: Text(isDemo ? t.connectBackendTitle : t.disconnectBackendTitle),
+        content: Text(isDemo ? t.connectBackendBody : t.disconnectBackendBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(dialogContext, false), child: Text(t.cancelButton)),
           FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(t.disconnectBackendButton)),
+              child: Text(isDemo ? t.connectBackendButton : t.disconnectBackendButton)),
         ],
       ),
     );
@@ -66,7 +71,7 @@ class SettingsScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.settingsTitle)),
+      appBar: AppBar(title: AppBarTitle(t.settingsTitle)),
       body: ListView(
         children: [
           Padding(
@@ -178,12 +183,15 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(t.signOutButton, style: const TextStyle(color: Colors.redAccent)),
             onTap: () => _signOut(context, ref),
           ),
-          if (backendMode != null)
-            ListTile(
-              leading: const Icon(Icons.link_off, color: Colors.redAccent),
-              title: Text(t.disconnectBackendButton, style: const TextStyle(color: Colors.redAccent)),
-              onTap: () => _disconnectBackend(context, ref),
+          ListTile(
+            leading: Icon(backendMode != null ? Icons.link_off : Icons.cloud_sync_outlined,
+                color: backendMode != null ? Colors.redAccent : null),
+            title: Text(
+              backendMode != null ? t.disconnectBackendButton : t.connectBackendButton,
+              style: TextStyle(color: backendMode != null ? Colors.redAccent : null),
             ),
+            onTap: () => _leaveBackend(context, ref, isDemo: backendMode == null),
+          ),
           const SizedBox(height: 24),
         ],
       ),

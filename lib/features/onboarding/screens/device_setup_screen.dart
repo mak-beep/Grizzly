@@ -8,6 +8,7 @@ import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/device_repository.dart';
 import '../../../core/utils/relative_time.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// Name a device and, with a linked family project, pair it with the
 /// physical unit. The unit registers itself in Firestore the first time it
@@ -62,11 +63,9 @@ class _DeviceSetupScreenState extends ConsumerState<DeviceSetupScreen> {
 
     ref.read(userProfileProvider.notifier).completeOnboarding();
     if (!mounted) return;
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    } else {
-      context.goNamed(AppRoutes.dashboard);
-    }
+    // Replace the whole stack: popping would return to the "add a device"
+    // step (asking again) and leave the dashboard unreachable by Back.
+    context.goNamed(AppRoutes.dashboard);
   }
 
   void _fail(String message) {
@@ -103,7 +102,7 @@ class _DeviceSetupScreenState extends ConsumerState<DeviceSetupScreen> {
     final selectedId = DeviceRepository.normalizeDeviceId(_uuidCtrl.text);
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.deviceSetupTitle(widget.deviceType.localizedName(t)))),
+      appBar: AppBar(title: AppBarTitle(t.deviceSetupTitle(widget.deviceType.localizedName(t)))),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

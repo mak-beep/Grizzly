@@ -17,7 +17,7 @@ class DeviceCard extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final isGps = device.type == DeviceType.gpsTracker;
     final color = isGps ? AppTheme.gpsTrackerColor : AppTheme.alarmButtonColor;
-    final icon = isGps ? Icons.gps_fixed : Icons.emergency_outlined;
+    final icon = device.type.icon;
     final status = deviceStatusLine(device, t, DateTime.now());
     final alarm = !isGps && device.alarmActive;
     final outside = isGps && device.geofence != null && device.geofenceStatus == GeofenceStatus.outside;

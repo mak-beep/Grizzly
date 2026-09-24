@@ -6,21 +6,6 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/models/device.dart';
 import '../../../core/providers.dart';
 
-/// Saves a device's contacts and invites any contact email that is not yet a
-/// family member, so they can sign in and receive alerts.
-Future<void> saveContactsAndInvite(
-  WidgetRef ref,
-  String deviceId,
-  List<EmergencyContact> contacts,
-) async {
-  await ref.read(deviceRepositoryProvider).setContacts(deviceId, contacts);
-  final family = ref.read(familyServiceProvider);
-  final uid = ref.read(authNotifierProvider).userId;
-  if (family != null && uid != null) {
-    await family.inviteIfNotMembers(contacts.map((c) => c.email), invitedByUid: uid);
-  }
-}
-
 enum _DeviceAction { rename, showId, repair, remove }
 
 /// App bar menu shared by both device screens.

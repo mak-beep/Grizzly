@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../constants/app_constants.dart';
 import '../providers.dart';
 import '../../features/auth/screens/auth_screen.dart';
+import '../../features/auth/screens/verify_email_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/device_detail/screens/alarm_button_detail_screen.dart';
 import '../../features/device_detail/screens/gps_tracker_detail_screen.dart';
@@ -15,7 +16,6 @@ import '../../features/onboarding/screens/firestore_rules_screen.dart';
 import '../../features/onboarding/screens/privacy_consent_screen.dart';
 import '../../features/onboarding/screens/profile_setup_screen.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
-import '../../features/onboarding/screens/waiting_for_invite_screen.dart';
 import '../../features/settings/screens/family_members_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 
@@ -23,12 +23,12 @@ class AppRoutes {
   AppRoutes._();
   static const splash = 'splash';
   static const auth = 'auth';
+  static const verifyEmail = 'verifyEmail';
   static const profileSetup = 'profileSetup';
   static const privacyConsent = 'privacyConsent';
   static const familyChoice = 'familyChoice';
   static const backendSetup = 'backendSetup';
   static const firestoreRulesSetup = 'firestoreRulesSetup';
-  static const waitingForInvite = 'waitingForInvite';
   static const deviceTypeSelection = 'deviceTypeSelection';
   static const deviceSetup = 'deviceSetup';
   static const dashboard = 'dashboard';
@@ -41,7 +41,7 @@ class AppRoutes {
 
 /// Onboarding order:
 ///   Splash → Profile → Consent → FamilyChoice → Backend
-///     → [new family: FirestoreRules] → Auth → [needs invite: WaitingForInvite]
+///     → [new family: FirestoreRules] → Auth
 ///     → Device type → Device setup → Dashboard
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -58,10 +58,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           loc == '/onboarding/backend-setup' ||
           loc == '/onboarding/firestore-rules';
       final goingToSignedInOnboarding = loc == '/onboarding/device-type' ||
-          loc == '/onboarding/device-setup' ||
-          loc == '/onboarding/waiting-invite';
+          loc == '/onboarding/device-setup';
       final goingToProtected =
           loc == '/dashboard' || loc.startsWith('/device/') || loc.startsWith('/settings');
+
+      // A real (non-demo) account that hasn't opened its verification email
+      // yet is parked here until it does, or signs out from Settings.
+      if (auth.isSignedIn && !auth.isEmailVerified) {
+        if (loc == '/onboarding/verify-email' || loc.startsWith('/settings')) return null;
+        return '/onboarding/verify-email';
+      }
 
       if (auth.isSignedIn && profile != null && profile.hasCompletedOnboarding) {
         if (loc == '/' || goingToAuth || goingToCoreOnboarding) return '/dashboard';
@@ -86,6 +92,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', name: AppRoutes.splash, builder: (_, __) => const SplashScreen()),
       GoRoute(path: '/auth', name: AppRoutes.auth, builder: (_, __) => const AuthScreen()),
       GoRoute(
+        path: '/onboarding/verify-email',
+        name: AppRoutes.verifyEmail,
+        builder: (_, __) => const VerifyEmailScreen(),
+      ),
+      GoRoute(
         path: '/onboarding/profile',
         name: AppRoutes.profileSetup,
         builder: (_, __) => const ProfileSetupScreen(),
@@ -109,11 +120,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/onboarding/firestore-rules',
         name: AppRoutes.firestoreRulesSetup,
         builder: (_, __) => const FirestoreRulesScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding/waiting-invite',
-        name: AppRoutes.waitingForInvite,
-        builder: (_, __) => const WaitingForInviteScreen(),
       ),
       GoRoute(
         path: '/onboarding/device-type',

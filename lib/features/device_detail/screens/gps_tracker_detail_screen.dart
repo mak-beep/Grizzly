@@ -18,6 +18,7 @@ import '../widgets/contacts_editor.dart';
 import '../widgets/device_actions.dart';
 import '../widgets/geofence_editor.dart';
 import '../widgets/history_log_list.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class GpsTrackerDetailScreen extends ConsumerStatefulWidget {
   final String deviceId;
@@ -73,7 +74,7 @@ class _GpsTrackerDetailScreenState extends ConsumerState<GpsTrackerDetailScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(device.name),
+        title: AppBarTitle(device.name),
         actions: [DeviceActionsMenu(device: device)],
       ),
       body: ListView(
@@ -149,7 +150,7 @@ class _GpsTrackerDetailScreenState extends ConsumerState<GpsTrackerDetailScreen>
           ContactsEditor(
             key: ValueKey('contacts-${device.id}'),
             initial: device.contacts,
-            onSave: (contacts) => saveContactsAndInvite(ref, device.id, contacts),
+            onSave: (contacts) => repo.setContacts(device.id, contacts),
           ),
           if (isDemo) ...[
             const SizedBox(height: 16),

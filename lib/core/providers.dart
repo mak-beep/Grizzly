@@ -22,8 +22,15 @@ class AuthState {
   final bool isSignedIn;
   final String? userId;
   final String? email;
+  // Always true in demo mode — there is no real address to confirm there.
+  final bool isEmailVerified;
 
-  const AuthState({this.isSignedIn = false, this.userId, this.email});
+  const AuthState({
+    this.isSignedIn = false,
+    this.userId,
+    this.email,
+    this.isEmailVerified = true,
+  });
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -32,12 +39,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> signUp({required String email, required String password}) async {
     final id = await _service.signUp(email: email, password: password);
-    state = AuthState(isSignedIn: true, userId: id, email: _service.currentEmail);
+    state = AuthState(
+      isSignedIn: true,
+      userId: id,
+      email: _service.currentEmail,
+      isEmailVerified: _service.isEmailVerified,
+    );
   }
 
   Future<void> signIn({required String email, required String password}) async {
     final id = await _service.signIn(email: email, password: password);
-    state = AuthState(isSignedIn: true, userId: id, email: _service.currentEmail);
+    state = AuthState(
+      isSignedIn: true,
+      userId: id,
+      email: _service.currentEmail,
+      isEmailVerified: _service.isEmailVerified,
+    );
   }
 
   Future<void> restoreSession() async {
@@ -46,9 +63,24 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isSignedIn: true,
         userId: _service.currentUserId,
         email: _service.currentEmail,
+        isEmailVerified: _service.isEmailVerified,
       );
     }
   }
+
+  /// Re-checks with Firebase whether the verification link has been opened.
+  Future<bool> refreshEmailVerified() async {
+    final verified = await _service.refreshEmailVerified();
+    state = AuthState(
+      isSignedIn: state.isSignedIn,
+      userId: state.userId,
+      email: state.email,
+      isEmailVerified: verified,
+    );
+    return verified;
+  }
+
+  Future<void> resendVerificationEmail() => _service.resendVerificationEmail();
 
   Future<void> signOut() async {
     await _service.signOut();

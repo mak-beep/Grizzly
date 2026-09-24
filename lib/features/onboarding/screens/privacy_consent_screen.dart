@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class PrivacyConsentScreen extends ConsumerStatefulWidget {
   const PrivacyConsentScreen({super.key});
@@ -32,7 +33,7 @@ class _PrivacyConsentScreenState extends ConsumerState<PrivacyConsentScreen> {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.privacyStepTitle)),
+      appBar: AppBar(title: AppBarTitle(t.privacyStepTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

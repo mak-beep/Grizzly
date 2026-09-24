@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
-import '../../../core/services/family_service.dart';
 import '../../../core/services/persistence_service.dart';
 
 /// Runs once per launch: restores the linked backend, session, profile and
@@ -77,18 +76,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       final family = ref.read(familyServiceProvider);
       if (linked && family != null) {
         try {
-          final result = await family
+          await family
               .ensureMembership(
                 uid: auth.userId!,
                 email: auth.email ?? '',
                 displayName: profile?.displayName ?? '',
               )
               .timeout(const Duration(seconds: 8));
-          if (result == MembershipResult.needsInvite) {
-            if (!mounted) return;
-            await _go(AppRoutes.waitingForInvite);
-            return;
-          }
         } catch (_) {
           // Offline or slow network: the cached dashboard is still useful.
         }
@@ -133,11 +127,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (var i = 0; i < _name.length; i++) _letter(i, t, scheme.onSurface),
-                  ],
+                // Scales down on very narrow screens instead of overflowing.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < _name.length; i++) _letter(i, t, scheme.onSurface),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Opacity(opacity: loader, child: const CircularProgressIndicator()),

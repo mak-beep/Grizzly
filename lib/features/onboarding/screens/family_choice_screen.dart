@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// New step, inserted between Privacy Consent and Backend Setup.
 ///
@@ -25,9 +26,9 @@ class FamilyChoiceScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.familyChoiceStepTitle)),
+      appBar: AppBar(title: AppBarTitle(t.familyChoiceStepTitle)),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

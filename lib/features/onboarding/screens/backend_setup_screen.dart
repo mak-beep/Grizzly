@@ -6,6 +6,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// Connect the family's own Firebase project. Runs BEFORE sign-up so the
 /// account is created in that project.
@@ -96,7 +97,7 @@ class _BackendSetupScreenState extends ConsumerState<BackendSetupScreen> {
         : [t.backendJoinGuideStep1, t.backendJoinGuideStep2];
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.isNewFamily ? t.backendStepTitle : t.backendJoinStepTitle)),
+      appBar: AppBar(title: AppBarTitle(widget.isNewFamily ? t.backendStepTitle : t.backendJoinStepTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -187,7 +188,10 @@ class _BackendSetupScreenState extends ConsumerState<BackendSetupScreen> {
                       children: [
                         const Icon(Icons.science_outlined, size: 20),
                         const SizedBox(width: 8),
-                        Text(t.backendDemoTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        Expanded(
+                          child: Text(t.backendDemoTitle,
+                              style: const TextStyle(fontWeight: FontWeight.w600)),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),

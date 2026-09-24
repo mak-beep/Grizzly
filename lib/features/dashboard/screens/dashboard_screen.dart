@@ -10,6 +10,7 @@ import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/notification_service.dart';
 import '../widgets/device_card.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -50,7 +51,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t.dashboardTitle),
+        title: AppBarTitle(t.dashboardTitle),
         bottom: backendMode == null
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(22),

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/localization/app_localizations.dart';
+import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// Reused both during first-time onboarding AND later from the dashboard's
 /// "Add device" button — registering a 2nd, 3rd, 10th device follows the
 /// exact same path, independent of any device already configured.
-class DeviceTypeSelectionScreen extends StatelessWidget {
+class DeviceTypeSelectionScreen extends ConsumerWidget {
   final bool isFirstDevice;
 
   const DeviceTypeSelectionScreen({super.key, this.isFirstDevice = true});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isFirstDevice ? t.deviceTypeStepTitleFirst : t.deviceTypeStepTitleAdd),
+        title: AppBarTitle(isFirstDevice ? t.deviceTypeStepTitleFirst : t.deviceTypeStepTitleAdd),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -57,6 +60,18 @@ class DeviceTypeSelectionScreen extends StatelessWidget {
                   extra: DeviceType.alarmButton,
                 ),
               ),
+              if (isFirstDevice) ...[
+                const SizedBox(height: 24),
+                TextButton(
+                  onPressed: () {
+                    // Setup is done without a device: remember that, so the
+                    // app opens on the (empty) dashboard from now on.
+                    ref.read(userProfileProvider.notifier).completeOnboarding();
+                    context.goNamed(AppRoutes.dashboard);
+                  },
+                  child: Text(t.skipForNowButton),
+                ),
+              ],
             ],
           ),
         ),
@@ -83,8 +98,7 @@ class _DeviceTypeTile extends StatelessWidget {
     final color = type == DeviceType.gpsTracker
         ? AppTheme.gpsTrackerColor
         : AppTheme.alarmButtonColor;
-    final icon =
-        type == DeviceType.gpsTracker ? Icons.gps_fixed : Icons.emergency_outlined;
+    final icon = type.icon;
 
     return Card(
       clipBehavior: Clip.antiAlias,

@@ -65,7 +65,7 @@ class _HistoryLogListState extends State<HistoryLogList> {
   IconData _iconFor(AlertEventType type) => switch (type) {
         AlertEventType.geofenceBreach => Icons.warning_amber_rounded,
         AlertEventType.geofenceReturn => Icons.home_outlined,
-        AlertEventType.alarmTriggered => Icons.emergency,
+        AlertEventType.alarmTriggered => Icons.notifications_active,
         AlertEventType.alarmCancelled => Icons.check_circle_outline,
         AlertEventType.locationPing => Icons.location_on_outlined,
       };

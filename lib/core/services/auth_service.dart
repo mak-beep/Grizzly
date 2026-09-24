@@ -1,3 +1,5 @@
+import 'dart:async' show unawaited;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,10 +30,14 @@ class AuthService {
   bool _isSignedIn = false;
   String? _currentUserId;
   String? _currentEmail;
+  // Demo-mode accounts are never "unverified" — there is no real address to
+  // confirm. Only a real Firebase Auth account can be false here.
+  bool _isEmailVerified = true;
 
   bool get isSignedIn => _isSignedIn;
   String? get currentUserId => _currentUserId;
   String? get currentEmail => _currentEmail;
+  bool get isEmailVerified => _isEmailVerified;
 
   bool get isLinkedToFirebase => _firebaseAuth != null;
   FirebaseFirestore? get firestore => _firestore;
@@ -113,7 +119,11 @@ class AuthService {
     if (auth != null) {
       final credential =
           await auth.createUserWithEmailAndPassword(email: email.trim(), password: password);
-      return _setSession(credential.user!.uid, credential.user!.email ?? email.trim());
+      // Fire-and-forget: a failed send (e.g. offline) shouldn't block account
+      // creation. The user can resend from the verify-email screen.
+      unawaited(credential.user!.sendEmailVerification());
+      return _setSession(credential.user!.uid, credential.user!.email ?? email.trim(),
+          emailVerified: credential.user!.emailVerified);
     }
     return _mockSignIn(email);
   }
@@ -123,15 +133,17 @@ class AuthService {
     if (auth != null) {
       final credential =
           await auth.signInWithEmailAndPassword(email: email.trim(), password: password);
-      return _setSession(credential.user!.uid, credential.user!.email ?? email.trim());
+      return _setSession(credential.user!.uid, credential.user!.email ?? email.trim(),
+          emailVerified: credential.user!.emailVerified);
     }
     return _mockSignIn(email);
   }
 
-  Future<String> _setSession(String uid, String email) async {
+  Future<String> _setSession(String uid, String email, {bool emailVerified = true}) async {
     _isSignedIn = true;
     _currentUserId = uid;
     _currentEmail = email;
+    _isEmailVerified = emailVerified;
     await PersistenceService.instance.saveAuthSession(userId: uid, email: email);
     return uid;
   }
@@ -139,6 +151,20 @@ class AuthService {
   Future<String> _mockSignIn(String email) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return _setSession('demo-user-${email.trim().toLowerCase().hashCode}', email.trim());
+  }
+
+  /// Re-checks verification status against Firebase (the local [User] object
+  /// is only updated by calling [User.reload]). No-op in demo mode.
+  Future<bool> refreshEmailVerified() async {
+    final user = _firebaseAuth?.currentUser;
+    if (user == null) return _isEmailVerified;
+    await user.reload();
+    _isEmailVerified = _firebaseAuth!.currentUser?.emailVerified ?? _isEmailVerified;
+    return _isEmailVerified;
+  }
+
+  Future<void> resendVerificationEmail() async {
+    await _firebaseAuth?.currentUser?.sendEmailVerification();
   }
 
   /// Restores a cached session on launch. Real Firebase sessions are
@@ -149,11 +175,18 @@ class AuthService {
 
     final auth = _firebaseAuth;
     if (auth != null) {
-      final user = auth.currentUser;
+      // On a cold start Firebase restores the saved user asynchronously;
+      // reading currentUser straight away can wrongly report "signed out".
+      final user = auth.currentUser ??
+          await auth
+              .authStateChanges()
+              .first
+              .timeout(const Duration(seconds: 5), onTimeout: () => null);
       if (user == null) return false;
       _isSignedIn = true;
       _currentUserId = user.uid;
       _currentEmail = user.email ?? cached.email;
+      _isEmailVerified = user.emailVerified;
       return true;
     }
 

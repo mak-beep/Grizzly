@@ -18,8 +18,8 @@ no server run by us.
   real device now raises a phone notification with vibration, an in-app
   banner, and a history entry — previously only the "simulate" buttons did.
 - **Emergency contacts are people, not just text.** A contact is identified by
-  the email they sign in with; adding one invites them to the family
-  automatically, and alerts for a device go to its contacts.
+  the email they sign in with, and alerts for a device go to its contacts
+  once they sign in on their own phone.
 - **Maps without an API key.** A built-in OpenStreetMap view (tiles +
   attribution, no key, no billing) replaces Google Maps: live position, safe
   zone circle, recent route, and tap-to-place for the safe zone.
@@ -30,7 +30,7 @@ no server run by us.
   connection and appear under *Detected devices*; the ID can also be copied
   from the Firebase console. (The old text told users to read it over USB,
   which the PCB doesn't have.)
-- **Security rules that mean something.** Family membership with invites, and
+- **Security rules that mean something.** Family membership (everyone who signs up joins the family), and
   per-device permissions, replace "any signed-in user can read and write
   everything". See *Security model* below.
 
@@ -105,8 +105,8 @@ For iOS, `ios/Runner/Info.plist` needs `NSLocationWhenInUseUsageDescription`
 6. The app then shows `firestore.rules` — copy or share it into
    **Firestore Database → Rules** and press **Publish**.
 7. Create the first account: whoever signs up first becomes the family owner.
-   Everyone else must be invited (Settings → Family members, or simply by
-   being added as an emergency contact) and then signs up with that email.
+   Everyone else who signs up to the same project joins the family
+   automatically (Settings → Family members lists them).
 8. Put the same **Project ID** and **Web API Key** into each device's firmware
    (`include/credentials.h`), flash it, and insert the SIM.
 9. When a device connects it appears under **Add device → Detected devices**.
@@ -115,9 +115,10 @@ For iOS, `ios/Runner/Info.plist` needs `NSLocationWhenInUseUsageDescription`
 
 - All family data lives under `families/family`.
 - **People** (email/password) must be listed in `families/family/members`.
-  Knowing the project's API key is therefore not enough to read a family's
-  data. The first user of a new project claims ownership; the others join via
-  an invite created by a member.
+  The first user of a new project claims ownership; everyone who signs up
+  afterwards joins as a member. There is no invite step, so anyone who has the
+  project's Project ID and API key AND signs up can see the family's devices —
+  share those values only with people you trust.
 - **Devices** (anonymous sign-in) may create their own document and write only
   their own status fields and history entries, and may read only their own
   document (to fetch the safe zone). They cannot read the family's other data.
@@ -158,7 +159,7 @@ lib/
     services/
       auth_service.dart             sign in/up, per-family Firebase link
       device_repository.dart        devices, history, live sync, alerts
-      family_service.dart           membership, invites
+      family_service.dart           membership
       alert_monitor.dart            decides who gets alerted, once
       notification_service.dart     notifications, vibration, background service
       geocoding_service.dart        OpenStreetMap address search

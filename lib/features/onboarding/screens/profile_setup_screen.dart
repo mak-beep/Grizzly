@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -45,7 +46,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       // Keep body from being resized by the keyboard — we scroll instead,
       // which prevents the 68px overflow on small screens.
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(title: Text(t.profileStepTitle)),
+      appBar: AppBar(title: AppBarTitle(t.profileStepTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// Shows the bundled firestore.rules so the family can publish them in the
 /// Firebase console. Shown once for a new family, and from Settings when the
@@ -79,7 +80,7 @@ class _FirestoreRulesScreenState extends State<FirestoreRulesScreen> {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(t.firestoreRulesStepTitle)),
+      appBar: AppBar(title: AppBarTitle(t.firestoreRulesStepTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

@@ -60,6 +60,17 @@ class AppLocalizations {
   String get authToggleToSignIn => _t('authToggleToSignIn');
   String get authToggleToSignUp => _t('authToggleToSignUp');
   String get authIndividualNote => _t('authIndividualNote');
+  String get verifyEmailTitle => _t('verifyEmailTitle');
+  String verifyEmailBody(String email) => _fmt('verifyEmailBody', {'email': email});
+  String get verifyEmailContinueButton => _t('verifyEmailContinueButton');
+  String get verifyEmailResendButton => _t('verifyEmailResendButton');
+  String get verifyEmailResent => _t('verifyEmailResent');
+  String get verifyEmailStillUnverified => _t('verifyEmailStillUnverified');
+  String get verifyEmailSignOutButton => _t('verifyEmailSignOutButton');
+  String get connectBackendTitle => _t('connectBackendTitle');
+  String get connectBackendBody => _t('connectBackendBody');
+  String get connectBackendButton => _t('connectBackendButton');
+  String get skipForNowButton => _t('skipForNowButton');
   String get authStepTitle => _t('authStepTitle');
 
   // ---- Onboarding: profile ----
@@ -247,7 +258,6 @@ class AppLocalizations {
   String get backgroundMonitoringLabel => _t('backgroundMonitoringLabel');
   String get backgroundMonitoringHint => _t('backgroundMonitoringHint');
   String get chargingLabel => _t('chargingLabel');
-  String get checkAgainButton => _t('checkAgainButton');
   String get contactEmailDuplicate => _t('contactEmailDuplicate');
   String get contactEmailInvalid => _t('contactEmailInvalid');
   String get contactEmailLabel => _t('contactEmailLabel');
@@ -270,9 +280,6 @@ class AppLocalizations {
   String get geofenceNotSet => _t('geofenceNotSet');
   String get geofenceOutside => _t('geofenceOutside');
   String get geofenceUnknown => _t('geofenceUnknown');
-  String get inviteButton => _t('inviteButton');
-  String get inviteMemberTitle => _t('inviteMemberTitle');
-  String inviteSent(String email) => _fmt('inviteSent', {'email': email});
   String get liveLocationTitle => _t('liveLocationTitle');
   String get locationPermissionDenied => _t('locationPermissionDenied');
   String get locationServicesOff => _t('locationServicesOff');
@@ -280,11 +287,9 @@ class AppLocalizations {
   String get monitoringNotificationBody => _t('monitoringNotificationBody');
   String get monitoringNotificationTitle => _t('monitoringNotificationTitle');
   String newDevicesDetected(int n) => _fmt('newDevicesDetected', {'n': '\$n'});
-  String get noPendingInvites => _t('noPendingInvites');
   String get notificationsSectionTitle => _t('notificationsSectionTitle');
   String get orEnterIdManually => _t('orEnterIdManually');
   String get ownerLabel => _t('ownerLabel');
-  String get pendingInvitesTitle => _t('pendingInvitesTitle');
   String get recenterMapTooltip => _t('recenterMapTooltip');
   String removeMemberBody(String email) => _fmt('removeMemberBody', {'email': email});
   String get removeMemberTitle => _t('removeMemberTitle');
@@ -293,7 +298,6 @@ class AppLocalizations {
   String get repairDeviceBody => _t('repairDeviceBody');
   String get repairDeviceTitle => _t('repairDeviceTitle');
   String get repairDone => _t('repairDone');
-  String get revokeInviteTooltip => _t('revokeInviteTooltip');
   String get safeZoneNeedsCenter => _t('safeZoneNeedsCenter');
   String get safeZoneRemoved => _t('safeZoneRemoved');
   String saveFailed(String error) => _fmt('saveFailed', {'error': error});
@@ -308,7 +312,6 @@ class AppLocalizations {
   String get statusNeverConnected => _t('statusNeverConnected');
   String statusOffline(String time) => _fmt('statusOffline', {'time': time});
   String statusOnline(String time) => _fmt('statusOnline', {'time': time});
-  String get stillNotInvited => _t('stillNotInvited');
   String get syncErrorBanner => _t('syncErrorBanner');
   String get tapMapToSetCenter => _t('tapMapToSetCenter');
   String get testNotificationBody => _t('testNotificationBody');
@@ -316,9 +319,6 @@ class AppLocalizations {
   String get testNotificationTitle => _t('testNotificationTitle');
   String get useMyLocationButton => _t('useMyLocationButton');
   String get waitingForAlarmLocation => _t('waitingForAlarmLocation');
-  String waitingInviteBody(String email) => _fmt('waitingInviteBody', {'email': email});
-  String get waitingInviteHeading => _t('waitingInviteHeading');
-  String get waitingInviteTitle => _t('waitingInviteTitle');
   String get youLabel => _t('youLabel');
 }
 
@@ -356,6 +356,17 @@ const Map<String, String> _enValues = {
   'authToggleToSignIn': 'Already have an account? Sign in',
   'authToggleToSignUp': "Don't have an account? Sign up",
   'authIndividualNote': 'Each contact linked to a device signs in separately — your language, theme, and login are yours alone.',
+  'verifyEmailTitle': 'Verify your email',
+  'verifyEmailBody': "We've sent a verification link to {email}. Open it, then come back and tap Continue. Check your spam folder if you don't see it.",
+  'verifyEmailContinueButton': "I've verified — Continue",
+  'verifyEmailResendButton': 'Resend email',
+  'verifyEmailResent': 'Verification email sent.',
+  'verifyEmailStillUnverified': "Not verified yet. Please open the link in the email first.",
+  'verifyEmailSignOutButton': 'Sign out and use a different email',
+  'connectBackendTitle': 'Connect to your Firebase project?',
+  'connectBackendBody': 'This signs you out of demo mode so you can link your family\'s real Firebase project. Nothing in demo mode is saved anywhere else, so it will be lost.',
+  'connectBackendButton': 'Connect to Firebase',
+  'skipForNowButton': "Skip for now — I'll add a device later",
   'authStepTitle': 'Step 4 of 5 · Create your account',
   'backendFieldsRequired': 'Please enter both the Project ID and API Key.',
   'profileStepTitle': 'Step 1 of 5 · Your profile',
@@ -499,7 +510,7 @@ const Map<String, String> _enValues = {
   'backendAppIdHelper': 'Looks like 1:123456789012:android:abc123… (use the iOS App ID on an iPhone)',
   'backendSenderIdHelper': 'The Project number from Project settings → General',
   'backendJoinGuideStep1': 'Ask whoever set up Grizzly for the Project ID, Web API Key, App ID and Project number.',
-  'backendJoinGuideStep2': 'Ask them to invite your email (Settings → Family members) before you sign up.',
+  'backendJoinGuideStep2': "Then sign up with your own email — you'll join their family automatically.",
   'backendRestartRequired': 'Another family backend is still loaded. Close and reopen Grizzly, then try again.',
   'alarmInfoCheckIn': 'Checks in quietly about once an hour so you know it still works. Nothing is logged or notified',
   'alertAlarmTitle': '🚨 ALARM: {name}',
@@ -516,12 +527,11 @@ const Map<String, String> _enValues = {
   'backgroundMonitoringLabel': 'Monitor in the background',
   'backgroundMonitoringHint': 'Keeps alerts coming while Grizzly is in the background. Shows a small ongoing notification.',
   'chargingLabel': 'Charging',
-  'checkAgainButton': 'Check again',
   'contactEmailDuplicate': 'Each contact needs a different email',
   'contactEmailInvalid': 'Enter a valid email address',
   'contactEmailLabel': 'Email (their Grizzly login)',
   'contactPhoneLabel': 'Phone (optional)',
-  'contactsInfo': 'Contacts get alerts on their own phone once they sign in to Grizzly with this email. New emails are invited to your family automatically.',
+  'contactsInfo': "Contacts get alerts on their own phone once they sign in to Grizzly with this email.",
   'currentLocationLabel': 'My current location',
   'detectedDeviceSubtitle': 'Last connected {time}',
   'detectedDevicesEmpty': 'No new devices yet. Switch the device on with its SIM inserted; it appears here within a minute of connecting.',
@@ -533,15 +543,12 @@ const Map<String, String> _enValues = {
   'doneButton': 'Done',
   'eventGeofenceReturn': 'Back in safe zone',
   'familyCheckFailed': 'Could not check your family membership: {error}. Make sure the security rules are published.',
-  'familyMembersInfo': 'Everyone listed here can see and manage your family\'s devices. To add someone, invite their email; they then sign up in Grizzly with that email.',
+  'familyMembersInfo': "Everyone listed here has signed up to your family's project and can see and manage your family's devices.",
   'familyMembersTitle': 'Family members',
   'geofenceInside': 'Inside the safe zone',
   'geofenceNotSet': 'No safe zone set',
   'geofenceOutside': 'Outside the safe zone',
   'geofenceUnknown': 'Safe zone status not known yet',
-  'inviteButton': 'Invite',
-  'inviteMemberTitle': 'Invite someone',
-  'inviteSent': '{email} can now join your family',
   'liveLocationTitle': 'Live location',
   'locationPermissionDenied': 'Location permission was denied',
   'locationServicesOff': 'Turn on location services first',
@@ -549,11 +556,9 @@ const Map<String, String> _enValues = {
   'monitoringNotificationBody': 'Watching your devices for alerts',
   'monitoringNotificationTitle': 'Grizzly is active',
   'newDevicesDetected': 'New devices detected: {n}. Tap to add',
-  'noPendingInvites': 'No pending invites',
   'notificationsSectionTitle': 'Notifications',
   'orEnterIdManually': 'Select a detected device above, or enter its ID',
   'ownerLabel': 'Owner',
-  'pendingInvitesTitle': 'Pending invites',
   'recenterMapTooltip': 'Center on device',
   'removeMemberBody': '{email} will no longer see your family\'s devices.',
   'removeMemberTitle': 'Remove member?',
@@ -562,7 +567,6 @@ const Map<String, String> _enValues = {
   'repairDeviceBody': 'Use this when the device was re-flashed and can no longer send updates. It claims this entry again the next time it connects.',
   'repairDeviceTitle': 'Re-pair device',
   'repairDone': 'The device can reconnect now',
-  'revokeInviteTooltip': 'Cancel invite',
   'safeZoneNeedsCenter': 'Search an address, use your location or tap the map first',
   'safeZoneRemoved': 'Safe zone removed',
   'saveFailed': 'Could not save: {error}',
@@ -577,7 +581,6 @@ const Map<String, String> _enValues = {
   'statusNeverConnected': 'Waiting for the device to connect',
   'statusOffline': 'Offline · last update {time}',
   'statusOnline': 'Online · updated {time}',
-  'stillNotInvited': 'Not invited yet. Ask a family member to invite your email.',
   'syncErrorBanner': 'Can\'t sync with your family\'s backend. Check the connection and that the security rules are published.',
   'tapMapToSetCenter': 'Tap the map to place the centre of the safe zone',
   'testNotificationBody': 'This is how Grizzly alerts look and feel.',
@@ -585,9 +588,6 @@ const Map<String, String> _enValues = {
   'testNotificationTitle': 'Grizzly test alert',
   'useMyLocationButton': 'Use my current location',
   'waitingForAlarmLocation': 'Alert sent. Waiting for the button\'s GPS location…',
-  'waitingInviteBody': 'Your account {email} is not part of this family yet. Ask a family member to open Settings → Family members in Grizzly and invite this email, then tap Check again.',
-  'waitingInviteHeading': 'Almost there',
-  'waitingInviteTitle': 'Waiting for an invite',
   'youLabel': 'You',
 };
 
@@ -604,6 +604,17 @@ const Map<String, String> _frValues = {
   'authToggleToSignIn': 'Vous avez déjà un compte ? Connectez-vous',
   'authToggleToSignUp': "Vous n'avez pas de compte ? Inscrivez-vous",
   'authIndividualNote': 'Chaque contact lié à un appareil se connecte séparément — votre langue, votre thème et votre connexion vous appartiennent.',
+  'verifyEmailTitle': 'Vérifiez votre e-mail',
+  'verifyEmailBody': 'Nous avons envoyé un lien de vérification à {email}. Ouvrez-le, puis revenez et appuyez sur Continuer. Vérifiez vos courriers indésirables si vous ne le voyez pas.',
+  'verifyEmailContinueButton': "J'ai vérifié — Continuer",
+  'verifyEmailResendButton': "Renvoyer l'e-mail",
+  'verifyEmailResent': 'E-mail de vérification envoyé.',
+  'verifyEmailStillUnverified': "Pas encore vérifié. Veuillez d'abord ouvrir le lien reçu par e-mail.",
+  'verifyEmailSignOutButton': 'Se déconnecter et utiliser un autre e-mail',
+  'connectBackendTitle': 'Se connecter à votre projet Firebase ?',
+  'connectBackendBody': 'Cela vous déconnecte du mode démo afin de lier le vrai projet Firebase de votre famille. Rien de ce qui est en mode démo n\'est enregistré ailleurs, ce sera donc perdu.',
+  'connectBackendButton': 'Se connecter à Firebase',
+  'skipForNowButton': "Passer pour l'instant — j'ajouterai un appareil plus tard",
   'authStepTitle': 'Étape 4 sur 5 · Créer votre compte',
   'backendFieldsRequired': "Veuillez saisir l'ID de projet et la clé API.",
   'profileStepTitle': 'Étape 1 sur 5 · Votre profil',
@@ -745,7 +756,7 @@ const Map<String, String> _frValues = {
   'backendAppIdHelper': 'Ressemble à 1:123456789012:android:abc123… (utilisez l\'ID iOS sur un iPhone)',
   'backendSenderIdHelper': 'Le numéro du projet dans Paramètres du projet → Général',
   'backendJoinGuideStep1': 'Demandez à la personne qui a configuré Grizzly l\'ID de projet, la clé API Web, l\'ID d\'application et le numéro du projet.',
-  'backendJoinGuideStep2': 'Demandez-lui d\'inviter votre e-mail (Réglages → Membres de la famille) avant votre inscription.',
+  'backendJoinGuideStep2': "Inscrivez-vous ensuite avec votre e-mail : vous rejoindrez automatiquement sa famille.",
   'backendRestartRequired': 'Un autre backend familial est encore chargé. Fermez et rouvrez Grizzly, puis réessayez.',
   'alarmInfoCheckIn': 'Se signale discrètement environ une fois par heure pour confirmer qu\'il fonctionne. Aucun enregistrement ni notification',
   'alertAlarmTitle': '🚨 ALARME : {name}',
@@ -762,12 +773,11 @@ const Map<String, String> _frValues = {
   'backgroundMonitoringLabel': 'Surveiller en arrière-plan',
   'backgroundMonitoringHint': 'Permet de recevoir les alertes lorsque Grizzly est en arrière-plan. Affiche une petite notification permanente.',
   'chargingLabel': 'En charge',
-  'checkAgainButton': 'Vérifier à nouveau',
   'contactEmailDuplicate': 'Chaque contact doit avoir un e-mail différent',
   'contactEmailInvalid': 'Saisissez une adresse e-mail valide',
   'contactEmailLabel': 'E-mail (son identifiant Grizzly)',
   'contactPhoneLabel': 'Téléphone (facultatif)',
-  'contactsInfo': 'Les contacts reçoivent les alertes sur leur téléphone dès qu\'ils se connectent à Grizzly avec cet e-mail. Les nouveaux e-mails sont invités automatiquement dans votre famille.',
+  'contactsInfo': "Les contacts reçoivent les alertes sur leur téléphone dès qu'ils se connectent à Grizzly avec cet e-mail.",
   'currentLocationLabel': 'Ma position actuelle',
   'detectedDeviceSubtitle': 'Dernière connexion {time}',
   'detectedDevicesEmpty': 'Aucun nouvel appareil. Allumez l\'appareil avec sa carte SIM ; il apparaît ici moins d\'une minute après la connexion.',
@@ -779,15 +789,12 @@ const Map<String, String> _frValues = {
   'doneButton': 'Terminé',
   'eventGeofenceReturn': 'Retour dans la zone de sécurité',
   'familyCheckFailed': 'Impossible de vérifier votre appartenance à la famille : {error}. Vérifiez que les règles de sécurité sont publiées.',
-  'familyMembersInfo': 'Toutes les personnes listées ici peuvent voir et gérer les appareils de votre famille. Pour ajouter quelqu\'un, invitez son e-mail ; il s\'inscrit ensuite dans Grizzly avec cet e-mail.',
+  'familyMembersInfo': "Toutes les personnes listées ici se sont inscrites à votre projet familial et peuvent voir et gérer les appareils de votre famille.",
   'familyMembersTitle': 'Membres de la famille',
   'geofenceInside': 'Dans la zone de sécurité',
   'geofenceNotSet': 'Aucune zone de sécurité définie',
   'geofenceOutside': 'Hors de la zone de sécurité',
   'geofenceUnknown': 'État de la zone de sécurité inconnu pour l\'instant',
-  'inviteButton': 'Inviter',
-  'inviteMemberTitle': 'Inviter quelqu\'un',
-  'inviteSent': '{email} peut maintenant rejoindre votre famille',
   'liveLocationTitle': 'Position en direct',
   'locationPermissionDenied': 'L\'autorisation de localisation a été refusée',
   'locationServicesOff': 'Activez d\'abord les services de localisation',
@@ -795,11 +802,9 @@ const Map<String, String> _frValues = {
   'monitoringNotificationBody': 'Surveillance des alertes de vos appareils',
   'monitoringNotificationTitle': 'Grizzly est actif',
   'newDevicesDetected': 'Nouveaux appareils détectés : {n}. Touchez pour ajouter',
-  'noPendingInvites': 'Aucune invitation en attente',
   'notificationsSectionTitle': 'Notifications',
   'orEnterIdManually': 'Sélectionnez un appareil détecté ci-dessus ou saisissez son identifiant',
   'ownerLabel': 'Propriétaire',
-  'pendingInvitesTitle': 'Invitations en attente',
   'recenterMapTooltip': 'Centrer sur l\'appareil',
   'removeMemberBody': '{email} ne verra plus les appareils de votre famille.',
   'removeMemberTitle': 'Retirer ce membre ?',
@@ -808,7 +813,6 @@ const Map<String, String> _frValues = {
   'repairDeviceBody': 'À utiliser lorsque l\'appareil a été reflashé et ne peut plus envoyer de mises à jour. Il reprendra cette fiche à sa prochaine connexion.',
   'repairDeviceTitle': 'Réappairer l\'appareil',
   'repairDone': 'L\'appareil peut se reconnecter',
-  'revokeInviteTooltip': 'Annuler l\'invitation',
   'safeZoneNeedsCenter': 'Recherchez une adresse, utilisez votre position ou touchez la carte d\'abord',
   'safeZoneRemoved': 'Zone de sécurité supprimée',
   'saveFailed': 'Impossible d\'enregistrer : {error}',
@@ -823,7 +827,6 @@ const Map<String, String> _frValues = {
   'statusNeverConnected': 'En attente de la connexion de l\'appareil',
   'statusOffline': 'Hors ligne · dernière mise à jour {time}',
   'statusOnline': 'En ligne · mis à jour {time}',
-  'stillNotInvited': 'Pas encore invité. Demandez à un membre de la famille d\'inviter votre e-mail.',
   'syncErrorBanner': 'Synchronisation impossible avec le backend familial. Vérifiez la connexion et la publication des règles de sécurité.',
   'tapMapToSetCenter': 'Touchez la carte pour placer le centre de la zone de sécurité',
   'testNotificationBody': 'Voici à quoi ressemblent les alertes Grizzly.',
@@ -831,9 +834,6 @@ const Map<String, String> _frValues = {
   'testNotificationTitle': 'Alerte test Grizzly',
   'useMyLocationButton': 'Utiliser ma position actuelle',
   'waitingForAlarmLocation': 'Alerte envoyée. En attente de la position GPS du bouton…',
-  'waitingInviteBody': 'Votre compte {email} ne fait pas encore partie de cette famille. Demandez à un membre d\'ouvrir Réglages → Membres de la famille dans Grizzly et d\'inviter cet e-mail, puis touchez Vérifier à nouveau.',
-  'waitingInviteHeading': 'Presque terminé',
-  'waitingInviteTitle': 'En attente d\'une invitation',
   'youLabel': 'Vous',
   'deviceUuidLabel': 'Identifiant de l\'appareil',
   'deviceUuidHint': 'p. ex. 550e8400-e29b-41d4-a716-446655440000',
@@ -852,6 +852,17 @@ const Map<String, String> _esValues = {
   'authToggleToSignIn': '¿Ya tienes una cuenta? Inicia sesión',
   'authToggleToSignUp': '¿No tienes una cuenta? Regístrate',
   'authIndividualNote': 'Cada contacto vinculado a un dispositivo inicia sesión por separado — tu idioma, tema e inicio de sesión son solo tuyos.',
+  'verifyEmailTitle': 'Verifica tu correo electrónico',
+  'verifyEmailBody': 'Enviamos un enlace de verificación a {email}. Ábrelo y luego vuelve y toca Continuar. Revisa tu carpeta de spam si no lo ves.',
+  'verifyEmailContinueButton': 'Ya verifiqué — Continuar',
+  'verifyEmailResendButton': 'Reenviar correo',
+  'verifyEmailResent': 'Correo de verificación enviado.',
+  'verifyEmailStillUnverified': 'Aún no verificado. Primero abre el enlace del correo.',
+  'verifyEmailSignOutButton': 'Cerrar sesión y usar otro correo',
+  'connectBackendTitle': '¿Conectar con tu proyecto de Firebase?',
+  'connectBackendBody': 'Esto cierra tu sesión del modo demo para que puedas vincular el proyecto real de Firebase de tu familia. Nada del modo demo se guarda en otro sitio, así que se perderá.',
+  'connectBackendButton': 'Conectar con Firebase',
+  'skipForNowButton': "Omitir por ahora — añadiré un dispositivo más tarde",
   'authStepTitle': 'Paso 4 de 5 · Crea tu cuenta',
   'backendFieldsRequired': 'Por favor, introduce el ID del proyecto y la clave API.',
   'profileStepTitle': 'Paso 1 de 5 · Tu perfil',
@@ -993,7 +1004,7 @@ const Map<String, String> _esValues = {
   'backendAppIdHelper': 'Tiene el formato 1:123456789012:android:abc123… (usa el App ID de iOS en un iPhone)',
   'backendSenderIdHelper': 'El número del proyecto en Configuración del proyecto → General',
   'backendJoinGuideStep1': 'Pide a quien configuró Grizzly el ID de proyecto, la clave de API web, el App ID y el número del proyecto.',
-  'backendJoinGuideStep2': 'Pídele que invite tu correo (Ajustes → Miembros de la familia) antes de registrarte.',
+  'backendJoinGuideStep2': "Después regístrate con tu correo: te unirás a su familia automáticamente.",
   'backendRestartRequired': 'Aún hay otro backend familiar cargado. Cierra y vuelve a abrir Grizzly e inténtalo de nuevo.',
   'alarmInfoCheckIn': 'Se registra discretamente una vez por hora para confirmar que funciona. Sin registros ni notificaciones',
   'alertAlarmTitle': '🚨 ALARMA: {name}',
@@ -1010,12 +1021,11 @@ const Map<String, String> _esValues = {
   'backgroundMonitoringLabel': 'Vigilar en segundo plano',
   'backgroundMonitoringHint': 'Permite seguir recibiendo alertas con Grizzly en segundo plano. Muestra una pequeña notificación permanente.',
   'chargingLabel': 'Cargando',
-  'checkAgainButton': 'Comprobar de nuevo',
   'contactEmailDuplicate': 'Cada contacto necesita un correo distinto',
   'contactEmailInvalid': 'Introduce un correo electrónico válido',
   'contactEmailLabel': 'Correo (su acceso a Grizzly)',
   'contactPhoneLabel': 'Teléfono (opcional)',
-  'contactsInfo': 'Los contactos reciben alertas en su propio teléfono cuando inician sesión en Grizzly con este correo. Los correos nuevos se invitan automáticamente a tu familia.',
+  'contactsInfo': "Los contactos reciben alertas en su propio teléfono cuando inician sesión en Grizzly con este correo.",
   'currentLocationLabel': 'Mi ubicación actual',
   'detectedDeviceSubtitle': 'Última conexión {time}',
   'detectedDevicesEmpty': 'Aún no hay dispositivos nuevos. Enciende el dispositivo con su SIM puesta; aparecerá aquí en menos de un minuto tras conectarse.',
@@ -1027,15 +1037,12 @@ const Map<String, String> _esValues = {
   'doneButton': 'Hecho',
   'eventGeofenceReturn': 'De vuelta en la zona segura',
   'familyCheckFailed': 'No se pudo comprobar tu pertenencia a la familia: {error}. Asegúrate de que las reglas de seguridad estén publicadas.',
-  'familyMembersInfo': 'Todas las personas de esta lista pueden ver y gestionar los dispositivos de tu familia. Para añadir a alguien, invita su correo; después se registrará en Grizzly con ese correo.',
+  'familyMembersInfo': "Todas las personas de esta lista se han registrado en el proyecto de tu familia y pueden ver y gestionar sus dispositivos.",
   'familyMembersTitle': 'Miembros de la familia',
   'geofenceInside': 'Dentro de la zona segura',
   'geofenceNotSet': 'Sin zona segura definida',
   'geofenceOutside': 'Fuera de la zona segura',
   'geofenceUnknown': 'Estado de la zona segura aún desconocido',
-  'inviteButton': 'Invitar',
-  'inviteMemberTitle': 'Invitar a alguien',
-  'inviteSent': '{email} ya puede unirse a tu familia',
   'liveLocationTitle': 'Ubicación en vivo',
   'locationPermissionDenied': 'Se denegó el permiso de ubicación',
   'locationServicesOff': 'Activa primero los servicios de ubicación',
@@ -1043,11 +1050,9 @@ const Map<String, String> _esValues = {
   'monitoringNotificationBody': 'Vigilando las alertas de tus dispositivos',
   'monitoringNotificationTitle': 'Grizzly está activo',
   'newDevicesDetected': 'Dispositivos nuevos detectados: {n}. Toca para añadir',
-  'noPendingInvites': 'No hay invitaciones pendientes',
   'notificationsSectionTitle': 'Notificaciones',
   'orEnterIdManually': 'Selecciona arriba un dispositivo detectado o introduce su ID',
   'ownerLabel': 'Propietario',
-  'pendingInvitesTitle': 'Invitaciones pendientes',
   'recenterMapTooltip': 'Centrar en el dispositivo',
   'removeMemberBody': '{email} ya no verá los dispositivos de tu familia.',
   'removeMemberTitle': '¿Eliminar miembro?',
@@ -1056,7 +1061,6 @@ const Map<String, String> _esValues = {
   'repairDeviceBody': 'Úsalo cuando el dispositivo se haya vuelto a programar y ya no pueda enviar actualizaciones. Reclamará esta entrada en su próxima conexión.',
   'repairDeviceTitle': 'Volver a vincular el dispositivo',
   'repairDone': 'El dispositivo ya puede reconectarse',
-  'revokeInviteTooltip': 'Cancelar invitación',
   'safeZoneNeedsCenter': 'Primero busca una dirección, usa tu ubicación o toca el mapa',
   'safeZoneRemoved': 'Zona segura eliminada',
   'saveFailed': 'No se pudo guardar: {error}',
@@ -1071,7 +1075,6 @@ const Map<String, String> _esValues = {
   'statusNeverConnected': 'Esperando a que el dispositivo se conecte',
   'statusOffline': 'Sin conexión · última actualización {time}',
   'statusOnline': 'En línea · actualizado {time}',
-  'stillNotInvited': 'Aún no te han invitado. Pide a un familiar que invite tu correo.',
   'syncErrorBanner': 'No se puede sincronizar con el backend de tu familia. Comprueba la conexión y que las reglas de seguridad estén publicadas.',
   'tapMapToSetCenter': 'Toca el mapa para situar el centro de la zona segura',
   'testNotificationBody': 'Así se ven y se sienten las alertas de Grizzly.',
@@ -1079,9 +1082,6 @@ const Map<String, String> _esValues = {
   'testNotificationTitle': 'Alerta de prueba de Grizzly',
   'useMyLocationButton': 'Usar mi ubicación actual',
   'waitingForAlarmLocation': 'Alerta enviada. Esperando la ubicación GPS del botón…',
-  'waitingInviteBody': 'Tu cuenta {email} todavía no forma parte de esta familia. Pide a un familiar que abra Ajustes → Miembros de la familia en Grizzly e invite este correo, y luego pulsa Comprobar de nuevo.',
-  'waitingInviteHeading': 'Ya casi está',
-  'waitingInviteTitle': 'Esperando una invitación',
   'youLabel': 'Tú',
   'deviceUuidLabel': 'ID del dispositivo',
   'deviceUuidHint': 'p. ej. 550e8400-e29b-41d4-a716-446655440000',
@@ -1100,6 +1100,17 @@ const Map<String, String> _itValues = {
   'authToggleToSignIn': 'Hai già un account? Accedi',
   'authToggleToSignUp': 'Non hai un account? Registrati',
   'authIndividualNote': 'Ogni contatto collegato a un dispositivo accede separatamente — la tua lingua, il tema e il tuo accesso sono solo tuoi.',
+  'verifyEmailTitle': 'Verifica la tua email',
+  'verifyEmailBody': 'Abbiamo inviato un link di verifica a {email}. Aprilo, poi torna qui e tocca Continua. Controlla anche la cartella spam.',
+  'verifyEmailContinueButton': 'Ho verificato — Continua',
+  'verifyEmailResendButton': 'Invia di nuovo',
+  'verifyEmailResent': 'Email di verifica inviata.',
+  'verifyEmailStillUnverified': 'Non ancora verificata. Apri prima il link ricevuto via email.',
+  'verifyEmailSignOutButton': 'Esci e usa un\'altra email',
+  'connectBackendTitle': 'Connettersi al tuo progetto Firebase?',
+  'connectBackendBody': 'Questo ti disconnette dalla modalità demo per collegare il vero progetto Firebase della tua famiglia. Nulla della modalità demo viene salvato altrove, quindi andrà perso.',
+  'connectBackendButton': 'Connetti a Firebase',
+  'skipForNowButton': "Salta per ora — aggiungerò un dispositivo più tardi",
   'authStepTitle': 'Passo 4 di 5 · Crea il tuo account',
   'backendFieldsRequired': 'Inserisci sia l\'ID progetto che la chiave API.',
   'profileStepTitle': 'Passo 1 di 5 · Il tuo profilo',
@@ -1241,7 +1252,7 @@ const Map<String, String> _itValues = {
   'backendAppIdHelper': 'Ha la forma 1:123456789012:android:abc123… (su iPhone usa l\'App ID iOS)',
   'backendSenderIdHelper': 'Il numero del progetto in Impostazioni progetto → Generali',
   'backendJoinGuideStep1': 'Chiedi a chi ha configurato Grizzly l\'ID progetto, la chiave API Web, l\'App ID e il numero del progetto.',
-  'backendJoinGuideStep2': 'Chiedigli di invitare la tua email (Impostazioni → Membri della famiglia) prima di registrarti.',
+  'backendJoinGuideStep2': "Poi registrati con la tua email: entrerai automaticamente nella loro famiglia.",
   'backendRestartRequired': 'È ancora caricato un altro backend familiare. Chiudi e riapri Grizzly, poi riprova.',
   'alarmInfoCheckIn': 'Si segnala in modo discreto circa una volta all\'ora per confermare che funziona. Nessun registro né notifica',
   'alertAlarmTitle': '🚨 ALLARME: {name}',
@@ -1258,12 +1269,11 @@ const Map<String, String> _itValues = {
   'backgroundMonitoringLabel': 'Monitora in background',
   'backgroundMonitoringHint': 'Continua a ricevere gli avvisi con Grizzly in background. Mostra una piccola notifica permanente.',
   'chargingLabel': 'In carica',
-  'checkAgainButton': 'Controlla di nuovo',
   'contactEmailDuplicate': 'Ogni contatto deve avere un\'email diversa',
   'contactEmailInvalid': 'Inserisci un indirizzo email valido',
   'contactEmailLabel': 'Email (il suo accesso Grizzly)',
   'contactPhoneLabel': 'Telefono (facoltativo)',
-  'contactsInfo': 'I contatti ricevono gli avvisi sul proprio telefono dopo aver effettuato l\'accesso a Grizzly con questa email. Le nuove email vengono invitate automaticamente nella tua famiglia.',
+  'contactsInfo': "I contatti ricevono gli avvisi sul proprio telefono quando accedono a Grizzly con questa email.",
   'currentLocationLabel': 'La mia posizione attuale',
   'detectedDeviceSubtitle': 'Ultima connessione {time}',
   'detectedDevicesEmpty': 'Nessun nuovo dispositivo. Accendi il dispositivo con la SIM inserita: comparirà qui entro un minuto dalla connessione.',
@@ -1275,15 +1285,12 @@ const Map<String, String> _itValues = {
   'doneButton': 'Fatto',
   'eventGeofenceReturn': 'Rientro nella zona sicura',
   'familyCheckFailed': 'Impossibile verificare la tua appartenenza alla famiglia: {error}. Assicurati che le regole di sicurezza siano pubblicate.',
-  'familyMembersInfo': 'Tutte le persone elencate qui possono vedere e gestire i dispositivi della famiglia. Per aggiungere qualcuno, invita la sua email; poi si registrerà in Grizzly con quella email.',
+  'familyMembersInfo': "Tutte le persone elencate si sono registrate nel progetto della tua famiglia e possono vedere e gestire i suoi dispositivi.",
   'familyMembersTitle': 'Membri della famiglia',
   'geofenceInside': 'Nella zona sicura',
   'geofenceNotSet': 'Nessuna zona sicura impostata',
   'geofenceOutside': 'Fuori dalla zona sicura',
   'geofenceUnknown': 'Stato della zona sicura non ancora noto',
-  'inviteButton': 'Invita',
-  'inviteMemberTitle': 'Invita qualcuno',
-  'inviteSent': '{email} ora può unirsi alla tua famiglia',
   'liveLocationTitle': 'Posizione in tempo reale',
   'locationPermissionDenied': 'Autorizzazione alla posizione negata',
   'locationServicesOff': 'Attiva prima i servizi di localizzazione',
@@ -1291,11 +1298,9 @@ const Map<String, String> _itValues = {
   'monitoringNotificationBody': 'Monitoraggio degli avvisi dei tuoi dispositivi',
   'monitoringNotificationTitle': 'Grizzly è attivo',
   'newDevicesDetected': 'Nuovi dispositivi rilevati: {n}. Tocca per aggiungere',
-  'noPendingInvites': 'Nessun invito in sospeso',
   'notificationsSectionTitle': 'Notifiche',
   'orEnterIdManually': 'Seleziona sopra un dispositivo rilevato oppure inserisci il suo ID',
   'ownerLabel': 'Proprietario',
-  'pendingInvitesTitle': 'Inviti in sospeso',
   'recenterMapTooltip': 'Centra sul dispositivo',
   'removeMemberBody': '{email} non vedrà più i dispositivi della tua famiglia.',
   'removeMemberTitle': 'Rimuovere il membro?',
@@ -1304,7 +1309,6 @@ const Map<String, String> _itValues = {
   'repairDeviceBody': 'Usalo quando il dispositivo è stato riprogrammato e non riesce più a inviare aggiornamenti. Riprenderà questa voce alla prossima connessione.',
   'repairDeviceTitle': 'Riassocia dispositivo',
   'repairDone': 'Il dispositivo ora può riconnettersi',
-  'revokeInviteTooltip': 'Annulla invito',
   'safeZoneNeedsCenter': 'Prima cerca un indirizzo, usa la tua posizione o tocca la mappa',
   'safeZoneRemoved': 'Zona sicura rimossa',
   'saveFailed': 'Impossibile salvare: {error}',
@@ -1319,7 +1323,6 @@ const Map<String, String> _itValues = {
   'statusNeverConnected': 'In attesa della connessione del dispositivo',
   'statusOffline': 'Offline · ultimo aggiornamento {time}',
   'statusOnline': 'Online · aggiornato {time}',
-  'stillNotInvited': 'Non ancora invitato. Chiedi a un membro della famiglia di invitare la tua email.',
   'syncErrorBanner': 'Impossibile sincronizzare con il backend della famiglia. Controlla la connessione e che le regole di sicurezza siano pubblicate.',
   'tapMapToSetCenter': 'Tocca la mappa per posizionare il centro della zona sicura',
   'testNotificationBody': 'Ecco come appaiono gli avvisi di Grizzly.',
@@ -1327,9 +1330,6 @@ const Map<String, String> _itValues = {
   'testNotificationTitle': 'Avviso di prova Grizzly',
   'useMyLocationButton': 'Usa la mia posizione attuale',
   'waitingForAlarmLocation': 'Avviso inviato. In attesa della posizione GPS del pulsante…',
-  'waitingInviteBody': 'Il tuo account {email} non fa ancora parte di questa famiglia. Chiedi a un membro di aprire Impostazioni → Membri della famiglia in Grizzly e invitare questa email, poi tocca Controlla di nuovo.',
-  'waitingInviteHeading': 'Ci siamo quasi',
-  'waitingInviteTitle': 'In attesa di un invito',
   'youLabel': 'Tu',
   'deviceUuidLabel': 'ID del dispositivo',
   'deviceUuidHint': 'es. 550e8400-e29b-41d4-a716-446655440000',

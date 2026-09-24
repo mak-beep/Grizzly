@@ -6,12 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../../core/localization/app_localizations.dart';
 import '../../../core/providers.dart';
 import '../../../core/router/app_router.dart';
-import '../../../core/services/family_service.dart';
 import '../../../core/services/persistence_service.dart';
+import '../../../core/widgets/app_bar_title.dart';
 
 /// Sign up or sign in. With a linked family project this is a real Firebase
 /// account; afterwards the user's family membership is checked (the first
-/// user of a new project becomes its owner, others need an invite).
+/// user of a new project becomes its owner, everyone after that joins as a member).
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
 
@@ -92,17 +92,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final family = ref.read(familyServiceProvider);
     if (linked && family != null) {
       try {
-        final result = await family.ensureMembership(
+        await family.ensureMembership(
           uid: userId,
           email: auth.email ?? _emailCtrl.text.trim(),
           displayName: profile?.displayName ?? '',
         );
-        if (result == MembershipResult.needsInvite) {
-          if (!mounted) return;
-          setState(() => _isSubmitting = false);
-          context.goNamed(AppRoutes.waitingForInvite);
-          return;
-        }
       } catch (e) {
         _showError(t.familyCheckFailed(e.toString()));
         return;
@@ -135,7 +129,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     return Scaffold(
       appBar: isMidOnboarding
-          ? AppBar(title: Text(t.authStepTitle), automaticallyImplyLeading: false)
+          ? AppBar(title: AppBarTitle(t.authStepTitle), automaticallyImplyLeading: false)
           : null,
       body: SafeArea(
         child: Center(

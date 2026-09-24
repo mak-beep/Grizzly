@@ -9,7 +9,7 @@ class AppTheme {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: _seed),
         scaffoldBackgroundColor: const Color(0xFFF7F8F7),
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0, toolbarHeight: 64),
       );
 
   static ThemeData get dark => ThemeData(
@@ -18,7 +18,7 @@ class AppTheme {
           seedColor: _seed,
           brightness: Brightness.dark,
         ),
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0, toolbarHeight: 64),
       );
 
   /// Colors used consistently for the two device types across icons,

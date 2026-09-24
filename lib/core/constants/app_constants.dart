@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show IconData, Icons;
+
 import '../localization/app_localizations.dart';
 
 /// Central place for every numeric/business rule agreed with the client, so
@@ -72,9 +74,11 @@ extension DeviceTypeLabel on DeviceType {
         DeviceType.alarmButton => 'Alarm Button',
       };
 
-  String get iconAsset => switch (this) {
-        DeviceType.gpsTracker => 'assets/icons/gps_chip.png',
-        DeviceType.alarmButton => 'assets/icons/alarm_button.png',
+  /// Standard Material icons used everywhere a device type is shown, so the
+  /// chip and the button look the same on every screen.
+  IconData get icon => switch (this) {
+        DeviceType.gpsTracker => Icons.location_on,
+        DeviceType.alarmButton => Icons.notifications_active,
       };
 
   String localizedName(AppLocalizations t) => switch (this) {
