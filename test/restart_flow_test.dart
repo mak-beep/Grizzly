@@ -52,6 +52,7 @@ void _smallPhone(WidgetTester tester) {
 }
 
 void main() {
+  _leaveDemo();
   _titles();
   testWidgets('adding the first device lands on the dashboard, not on "add a device" again',
       (tester) async {
@@ -134,4 +135,38 @@ class _Bar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) =>
       AppBar(toolbarHeight: 64, title: AppBarTitle(title));
+}
+
+void _leaveDemo() {
+  testWidgets('demo mode can be left from Settings and leads to the Firebase connection step',
+      (tester) async {
+    _smallPhone(tester);
+    SharedPreferences.setMockInitialValues({});
+    await _signUp(tester);
+    await _tapText(tester, "Skip for now — I'll add a device later");
+
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Connect to Firebase'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Connect to Firebase'), findsOneWidget);
+    await tester.tap(find.text('Connect to Firebase')); // the Settings row
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Connect to Firebase')); // dialog
+    await tester.pumpAndSettle();
+    expect(find.text("Let's personalize your account"), findsOneWidget);
+
+    await tester.enterText(find.widgetWithText(TextFormField, 'First name'), 'Alex');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Last name'), 'Doe');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Age'), '40');
+    await _tapText(tester, 'Continue');
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pumpAndSettle();
+    await _tapText(tester, 'I agree, continue');
+    await tester.tap(find.byIcon(Icons.add_home_outlined));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Connect your backend'), findsOneWidget);
+    expect(find.text('Firebase Project ID'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

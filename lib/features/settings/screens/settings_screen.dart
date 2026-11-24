@@ -30,7 +30,8 @@ class SettingsScreen extends ConsumerWidget {
   /// sends the user back through onboarding to pick a new one. Used both to
   /// disconnect from a family project and, in demo mode, to connect a real
   /// one for the first time — the underlying reset is identical either way.
-  Future<void> _leaveBackend(BuildContext context, WidgetRef ref, {required bool isDemo}) async {
+  Future<void> _leaveBackend(BuildContext context, WidgetRef ref,
+      {required bool isDemo}) async {
     final t = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -39,10 +40,12 @@ class SettingsScreen extends ConsumerWidget {
         content: Text(isDemo ? t.connectBackendBody : t.disconnectBackendBody),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false), child: Text(t.cancelButton)),
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(t.cancelButton)),
           FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(isDemo ? t.connectBackendButton : t.disconnectBackendButton)),
+              child: Text(
+                  isDemo ? t.connectBackendButton : t.disconnectBackendButton)),
         ],
       ),
     );
@@ -76,7 +79,8 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(t.settingsScopeNote, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            child: Text(t.settingsScopeNote,
+                style: const TextStyle(color: Colors.grey, fontSize: 12)),
           ),
           ListTile(
             leading: const Icon(Icons.person_outline),
@@ -87,17 +91,23 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.language_outlined),
             title: Text(t.languageLabel),
-            trailing: DropdownButton<String>(
-              value: profile.languageCode,
-              items: AppConstants.supportedLanguageCodes
-                  .map((code) => DropdownMenuItem(
-                        value: code,
-                        child: Text(AppLocalizations.nativeLanguageNames[code] ?? code),
-                      ))
-                  .toList(),
-              onChanged: (code) {
-                if (code != null) notifier.setLanguage(code);
-              },
+            trailing: SizedBox(
+              width: 140,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: profile.languageCode,
+                items: AppConstants.supportedLanguageCodes
+                    .map((code) => DropdownMenuItem(
+                          value: code,
+                          child: Text(
+                              AppLocalizations.nativeLanguageNames[code] ??
+                                  code),
+                        ))
+                    .toList(),
+                onChanged: (code) {
+                  if (code != null) notifier.setLanguage(code);
+                },
+              ),
             ),
           ),
           SwitchListTile(
@@ -111,15 +121,23 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.notifications_active_outlined),
             title: Text(t.alertStyleLabel),
-            trailing: DropdownButton<AlertStyle>(
-              value: profile.alertStyle,
-              items: [
-                DropdownMenuItem(value: AlertStyle.soundAndVibration, child: Text(t.alertStyleSound)),
-                DropdownMenuItem(value: AlertStyle.vibrationOnly, child: Text(t.alertStyleVibrate)),
-              ],
-              onChanged: (style) {
-                if (style != null) notifier.setAlertStyle(style);
-              },
+            trailing: SizedBox(
+              width: 170,
+              child: DropdownButton<AlertStyle>(
+                isExpanded: true,
+                value: profile.alertStyle,
+                items: [
+                  DropdownMenuItem(
+                      value: AlertStyle.soundAndVibration,
+                      child: Text(t.alertStyleSound)),
+                  DropdownMenuItem(
+                      value: AlertStyle.vibrationOnly,
+                      child: Text(t.alertStyleVibrate)),
+                ],
+                onChanged: (style) {
+                  if (style != null) notifier.setAlertStyle(style);
+                },
+              ),
             ),
           ),
           if (isAndroid && backendMode != null)
@@ -147,9 +165,20 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           _SectionTitle(t.backendSectionTitle),
           ListTile(
-            leading: Icon(backendMode == null ? Icons.science_outlined : Icons.cloud_done_outlined),
-            title: Text(backendMode == null ? t.backendModeDemo : t.backendModeConnected(backendMode)),
+            leading: Icon(backendMode == null
+                ? Icons.science_outlined
+                : Icons.cloud_done_outlined),
+            title: Text(backendMode == null
+                ? t.backendModeDemo
+                : t.backendModeConnected(backendMode)),
           ),
+          if (backendMode == null)
+            ListTile(
+              leading: const Icon(Icons.cloud_sync_outlined),
+              title: Text(t.connectBackendButton),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _leaveBackend(context, ref, isDemo: true),
+            ),
           if (backendMode != null) ...[
             ListTile(
               leading: const Icon(Icons.group_outlined),
@@ -180,18 +209,17 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent),
-            title: Text(t.signOutButton, style: const TextStyle(color: Colors.redAccent)),
+            title: Text(t.signOutButton,
+                style: const TextStyle(color: Colors.redAccent)),
             onTap: () => _signOut(context, ref),
           ),
-          ListTile(
-            leading: Icon(backendMode != null ? Icons.link_off : Icons.cloud_sync_outlined,
-                color: backendMode != null ? Colors.redAccent : null),
-            title: Text(
-              backendMode != null ? t.disconnectBackendButton : t.connectBackendButton,
-              style: TextStyle(color: backendMode != null ? Colors.redAccent : null),
+          if (backendMode != null)
+            ListTile(
+              leading: const Icon(Icons.link_off, color: Colors.redAccent),
+              title: Text(t.disconnectBackendButton,
+                  style: const TextStyle(color: Colors.redAccent)),
+              onTap: () => _leaveBackend(context, ref, isDemo: false),
             ),
-            onTap: () => _leaveBackend(context, ref, isDemo: backendMode == null),
-          ),
           const SizedBox(height: 24),
         ],
       ),

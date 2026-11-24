@@ -105,6 +105,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
+    // This phone is already linked to the family project, so whoever opens
+    // the app (after signing out, or when the saved session could not be
+    // restored) only needs to sign in again. Their profile, consent and
+    // devices are restored from their account on the sign-in screen; never
+    // send them back through the whole setup.
+    if (linked) {
+      await _go(AppRoutes.auth);
+      return;
+    }
+
     if (profile == null) {
       await _go(AppRoutes.profileSetup);
     } else if (!profile.hasAcceptedPrivacyConsent) {
